@@ -1,0 +1,24 @@
+{
+  "name": "Instragram",
+  "version": "0.0.1",
+  "description": "Connect site with instagram API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chinclubi/Instagram-Sellsuki.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chinclubi/Instagram-Sellsuki/issues"
+  },
+  "homepage": "https://github.com/chinclubi/Instagram-Sellsuki",
+  "dependencies": {
+    "connect": "^3.4.0",
+    "serve-static": "^1.10.0"
+  }
+}
