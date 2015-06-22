@@ -19,6 +19,9 @@
   "homepage": "https://github.com/chinclubi/Instagram-Sellsuki",
   "dependencies": {
     "connect": "^3.4.0",
+    "fs": "0.0.2",
+    "http": "0.0.0",
+    "http-server": "^0.8.0",
     "serve-static": "^1.10.0"
   }
 }
