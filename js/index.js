@@ -26,27 +26,46 @@ var app = angular.module('InstagramApp', []);
 app.controller('authenticateController', ['$scope', 'igapi', 'state', function($scope, igapi, state){
 
 	$scope.state = state.init();
+	$scope.feeds = {};
+
 	$scope.init = function(){
 		console.log('Init function');
 		if(igapi.authenticate()){
+			
 			igapi.getProfile({
 				userId : 'self'
-			}, function(res){
-				if(res && !res.error){
-					console.log(res);
-				}else{
-					console.log(res);	
-				}
-			});
+			}, profileResult);
+
+			igapi.getSelfFeed(selfFeedResult);
+		}
+	};
+
+	var selfFeedResult = function(res){
+		console.log(res);
+		if(res && !res.error){
+			console.log("Get Feed success.");
+			$scope.feeds = res;
+		}else{
+			console.log(res);
+		}
+	};
+
+	var profileResult = function(res){
+		if(res && !res.error){
+			console.log("Get Profile success.");
+		}else{
+			console.log(res);
 		}
 	};
 	
 }]).
 factory('igapi', ['$window', '$location', '$http', 'url', 'state', function($window, $location, $http, url, state){
+
 	return {
 		authenticate: function(){
 			if($location.path().search('access_token=') == 1){
 				authenticate.accessToken = $location.path().split('access_token=')[1];
+				$location.path('');
 			}
 			console.log(authenticate.accessToken);
 			if(authenticate.accessToken === null){
@@ -64,21 +83,43 @@ factory('igapi', ['$window', '$location', '$http', 'url', 'state', function($win
 				method: 'JSONP',
 				url: url.getProfile(params) + '&callback=JSON_CALLBACK'
 			}).
-			success(function(status) {
-				if(status.meta.code == 200){
-					$location.path('');
-					callback(status.data);
+			success(function(res) {
+				if(res.meta.code == 200){
+					callback(res.data);
 				}else{
 					authenticate.accessToken = null;
-					$location.path('');
 					callback({
-						error : status.meta
+						error : res.meta
 					});
 				}
 			}).
-			error(function(status) {
+			error(function(res) {
 				callback({
-					error : status
+					error : res
+				});
+			});
+		},
+		getSelfFeed: function(callback){
+			$http({
+				method: 'JSONP',
+				url: url.getSelfFeed() + '&callback=JSON_CALLBACK'
+			}).
+			success(function(res) {
+				if(res.meta.code == 200){
+					console.log("Success to get user feed.");
+					callback({
+						data : res.data,
+						pagination : res.pagination
+					});
+				}else{
+					callback({
+						error : res.meta
+					});
+				}
+			}).
+			error(function(res) {
+				callback({
+					error : res
 				});
 			});
 		}
@@ -104,9 +145,11 @@ factory('url', function(){
 	};
 }).
 factory('state', function(){
+
 	var state = {
 		isAuth: false
-	}
+	};
+
 	return {
 		init: function(){
 			return state;
