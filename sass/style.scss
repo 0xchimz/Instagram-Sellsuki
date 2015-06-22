@@ -1,0 +1,18 @@
+@import "bootstrap";
+@import "bootstrap-social";
+
+body {
+	@extend .fill;
+	padding-top: 70px;
+}
+html {
+	@extend .fill-html;
+}
+.fill-html {
+	height: calc(100% - 20px);
+	min-height: calc(100% - 20px);
+}
+.fill {
+	height: 100%;
+	min-height: 100%;
+}
