@@ -6474,4 +6474,14 @@ body {
   height: 100%;
   min-height: 100%; }
 
+.ig-name {
+  vertical-align: middle;
+  text-align: left; }
+
+.caption {
+  text-align: left; }
+
+.comment {
+  text-align: left; }
+
 /*# sourceMappingURL=style.css.map */

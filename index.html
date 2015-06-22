@@ -9,7 +9,7 @@
 </head>
 <body>
 	<nav class="navbar navbar-default navbar-fixed-top">
-		<div class="container-fluid">
+		<div class="container">
 			<div class="navbar-header">
 				<a class="navbar-brand" href="http://www.sellsuki.com/" target="_blank">
 					<img src="img/logo-header.png">
@@ -20,31 +20,61 @@
 			</div>
 		</div>
 	</nav>
-	<div ng-controller="authenticateController" ng-init="init()" class="container-fluid text-center fill">
+	<div ng-controller="igController" ng-init="init()" class="container text-center fill">
 		<div class="row fill">
 			<div class="col-md-4 col-md-offset-4" ng-hide="state.isAuth">
 				<a class="btn btn-block btn-social btn-instagram">
 					<i class="fa fa-instagram"></i> Sign in with Instagram
 				</a>
 			</div>
-			<div class="col-md-4 fill heightFeed" ng-show="state.isAuth">
+			<div class="col-md-5 fill heightFeed" ng-show="state.isAuth">
 				<div class="panel panel-default fill">
 					<div class="panel-body">
 						<div class="userFeed">
 							<div class="thumbnail" ng-repeat="feed in feeds.data">
-								<img ng-src="{{feed.images.standard_resolution.url}}" />
+								<img ng-src="{{feed.images.standard_resolution.url}}" ng-click="loadMedia(feed)" />
+							</div>
+							<div class="panel-body">
+								<button type="button" class="btn btn-default btn-lg" ng-click="getFeed()">
+									<i class="glyphicon glyphicon-plus"></i> Load More
+								</button>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="col-md-8 fill" ng-show="state.isAuth">
-				<div class="panel panel-default fill">
-					<div class="jumbotron">
-						tesdsadsa
+			<div class="col-md-7 fill" ng-show="state.isShowMedia">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<div class="media">
+							<div class="media-left media-middle">
+								<a ng-href="{{currentMedia.link}}" target="_blank">
+									<img ng-src="{{currentMedia.user.profile_picture}}" class="media-object img-circle" width="50px" height="50px" />
+								</a>
+							</div>
+							<div class="media-body ig-name">
+								<h4 class="media-heading">{{currentMedia.user.username}}</h4>
+							</div>
+						</div>
 					</div>
 					<div class="panel-body">
-						Test
+						<img ng-src="{{currentMedia.images.standard_resolution.url}}" class="img-responsive img-rounded" />
+						<div class="caption">
+							<b>{{currentMedia.caption.from.username}}</b> {{currentMedia.caption.text}}	
+						</div>
+						<div class="comment">
+							<div ng-repeat="item in currentMedia.comments.data">
+								<b>{{item.from.username}}</b> {{item.text}}
+							</div>
+						</div>
+					</div>
+					<div class="panel-footer">
+						<form class="form-inline">
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Add a comment" ng-model="comment" />
+							</div>
+							<button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-send"></i></button>
+						</form>
 					</div>
 				</div>
 			</div>
