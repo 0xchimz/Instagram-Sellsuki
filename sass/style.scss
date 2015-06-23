@@ -26,3 +26,10 @@ html {
 .comment {
 	text-align: left;
 }
+.form-group-comment {
+	@extend .form-group;
+	width: calc(100% - 45px);
+	input {
+		width: 100% !important;
+	}
+}

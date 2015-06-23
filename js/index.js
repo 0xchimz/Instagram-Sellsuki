@@ -16,10 +16,10 @@ var authenticate = {
 };
 
 var url = {
-	authenticate : 'https://instagram.com/oauth/authorize/',
-	getProfile : 'https://api.instagram.com/v1/users/',
-	getSelfFeed : 'https://api.instagram.com/v1/users/self/feed/',
-	getMedia : 'https://api.instagram.com/v1/media/'
+	authenticateUrl : 'https://instagram.com/oauth/authorize/',
+	userUrl : 'https://api.instagram.com/v1/users/',
+	mediaPath : '/media/recent/',
+	mediaUrl : 'https://api.instagram.com/v1/media/'
 };
 
 var app = angular.module('InstagramApp', []);
@@ -33,7 +33,7 @@ app.controller('igController', ['$scope', 'igapi', 'state', function($scope, iga
 		},
 		data: []
 	};
-	$scope.currentMedia = '';
+	$scope.currentMedia = state.getCurrentMedia();
 
 	$scope.init = function(){
 		console.log('Init function');
@@ -43,14 +43,15 @@ app.controller('igController', ['$scope', 'igapi', 'state', function($scope, iga
 				userId : 'self'
 			}, profileResult);
 
-			$scope.getFeed();
+			$scope.getUserMedia();
 		}
 	};
 
-	$scope.getFeed = function(){
-		igapi.getSelfFeed({
-			maxId : $scope.feeds.pagination.next_max_id
-		}, selfFeedResult);
+	$scope.getUserMedia = function(){
+		igapi.getUserMedia({
+			maxId : $scope.feeds.pagination.next_max_id,
+			userId : 'self'
+		}, selfMediaResult);
 	};
 
 	$scope.loadMedia = function(media){
@@ -59,10 +60,10 @@ app.controller('igController', ['$scope', 'igapi', 'state', function($scope, iga
 		console.log(media);
 	};
 
-	var selfFeedResult = function(res){
+	var selfMediaResult = function(res){
 		console.log(res);
 		if(res && !res.error){
-			console.log("Get Feed success.");
+			console.log("Get Self Media success.");
 			$scope.feeds.data.push.apply($scope.feeds.data, res.data);
 			$scope.feeds.pagination = res.pagination;
 		}else{
@@ -78,8 +79,16 @@ app.controller('igController', ['$scope', 'igapi', 'state', function($scope, iga
 		}
 	};
 	
-}]).
-factory('igapi', ['$window', '$location', '$http', 'url', 'state', function($window, $location, $http, url, state){
+}]);
+
+app.controller('submitComment', ['$scope', 'igapi', 'state', function($scope, igapi, state){
+	$scope.currentMedia = state.getCurrentMedia();
+	$scope.sendComment = function(){
+		
+	};
+}]);
+
+app.factory('igapi', ['$window', '$location', '$http', 'url', 'state', function($window, $location, $http, url, state){
 
 	return {
 		authenticate: function(){
@@ -119,10 +128,10 @@ factory('igapi', ['$window', '$location', '$http', 'url', 'state', function($win
 				});
 			});
 		},
-		getSelfFeed: function(params, callback){
+		getUserMedia: function(params, callback){
 			$http({
 				method: 'JSONP',
-				url: url.getSelfFeed(params) + '&callback=JSON_CALLBACK'
+				url: url.getUserMedia(params) + '&callback=JSON_CALLBACK'
 			}).
 			success(function(res) {
 				if(res.meta.code == 200){
@@ -167,22 +176,25 @@ factory('igapi', ['$window', '$location', '$http', 'url', 'state', function($win
 			});
 		}
 	};
-}]).
-factory('url', function(){
+}]);
+
+app.factory('url', function(){
 	return {
 		auth: function(){
-			return url.authenticate+
+			return url.authenticateUrl+
 			'?client_id='+config.clientId+
 			'&response_type=token&scope='+config.scope+
 			'&redirect_uri='+config.redirectUri;
 		},
 		getProfile: function(params){
-			return url.getProfile+
+			return url.userUrl+
 			params.userId+
 			'?access_token='+authenticate.accessToken;
 		},
-		getSelfFeed: function(params){
-			return url.getSelfFeed+
+		getUserMedia: function(params){
+			return url.userUrl+
+			params.userId+
+			url.mediaPath+
 			'?access_token='+authenticate.accessToken+
 			'&max_id='+params.maxId;
 		},
@@ -192,13 +204,16 @@ factory('url', function(){
 			'?access_token='+authenticate.accessToken;
 		}
 	};
-}).
-factory('state', function(){
+});
+
+app.factory('state', function(){
 
 	var state = {
 		isAuth: false,
 		isShowMedia: false
 	};
+
+	var currentMedia = '';
 
 	return {
 		init: function(){
@@ -209,6 +224,9 @@ factory('state', function(){
 		},
 		isShowMedia: function(r){
 			state.isShowMedia = r;
+		},
+		getCurrentMedia: function(){
+			return currentMedia;
 		}
 	};
 });

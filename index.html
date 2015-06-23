@@ -69,8 +69,8 @@
 						</div>
 					</div>
 					<div class="panel-footer">
-						<form class="form-inline">
-							<div class="form-group">
+						<form class="form-inline" ng-submit="sendComment()" ng-controller="submitComment">
+							<div class="form-group-comment">
 								<input type="text" class="form-control" placeholder="Add a comment" ng-model="comment" />
 							</div>
 							<button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-send"></i></button>
